@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Burrito {
+  id        String     @id @default(cuid())
+  name      String
+  price     Float
+  cal       Int
+  imageSrc  String
+  options   Option[]
+  orderItems OrderItem[] // Add this line
+}
+
+model Option {
+  id        String   @id @default(cuid())
+  name      String
+  imageSrc  String
+  cal       Int
+  burritos  Burrito[]
+  orderItems OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  totalCost Float
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  burrito   Burrito  @relation(fields: [burritoId], references: [id])
+  burritoId String
+  options   Option[]
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+}
